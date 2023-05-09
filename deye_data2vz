@@ -1,0 +1,41 @@
+#!/usr/bin/perl
+# A simple pure perl reimplementation of
+# https://wiki.volkszaehler.org/hardware/channels/solar_inverters/deye
+# I need to query multiple inverters.
+
+use strict;
+use warnings;
+use LWP::UserAgent;
+
+our %config;
+do "/etc/vz/config" or die $@;
+
+my @err;
+my $ua = LWP::UserAgent->new;
+
+foreach my $inverter (@{$config{inverter}}){
+        my $response = $ua->get("http://$inverter->[0]/status.html");
+        $response->authorization_basic($inverter->[2], $inverter->[3]);
+        if ($response->is_success) {
+                my $content = $response->content;
+                for (split /^/, $content) {
+                     chomp();
+                     my $line = $_;
+                     if ($line =~ /(?<=webdata_now_p = ")\d+/) {
+                         $line =~ s/[^0-9]//g;
+                         $response = $ua->get("http://$config{DB_Host}/middleware/data/$inverter->[1].json?operation=add&value=$line");
+                         if (!$response->is_success) {
+                                 push @err,$response->status_line;
+                         }
+                         last;
+                     }
+               }
+       }
+       else {
+               push @err,$response->status_line;
+       }
+}
+foreach (@err) {
+     print "$_\n";
+}
+exit @err ? 1 : 0;
