@@ -1,0 +1,13 @@
+# config file for deye2vzloger
+# When DB_direct is set to 1 the values are send to the middleware DB without vzlogger, DB_Host is required then
+# and you must run the script by cron or something else.
+# otherwise the script is run by vzlogger itself via exec command
+
+%config=(
+	DB_direct=>0,
+        DB_Host=>'vz_middleware.example.com',
+        inverter=>[
+                ['inverter1.example.com','<YOUR UUID>','admin','yourpass','identifier1'],
+                ['inverter2.example.com','<YOUR UUID>','admin','yourpass','identifier2'],
+        ],
+);

@@ -1,7 +1,0 @@
-%config=(
-        DB_Host=>'vzhost.example.com',
-        inverter=>[
-                ['inverter.example.com','<YOUR UUID>','admin','yourpass'],
-                ['inverter2.example.com','<YOUR UUID2>','admin','yourpass'],
-        ],
-);

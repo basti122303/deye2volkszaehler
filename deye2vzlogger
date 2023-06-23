@@ -2,6 +2,7 @@
 # A simple pure perl reimplementation of
 # https://wiki.volkszaehler.org/hardware/channels/solar_inverters/deye
 # I need to query multiple inverters.
+# You can push the values direct in the middleware DB or collect them by vzlogger (see config)
 
 use strict;
 use warnings;
@@ -23,11 +24,16 @@ foreach my $inverter (@{$config{inverter}}){
                      my $line = $_;
                      if ($line =~ /(?<=webdata_now_p = ")\d+/) {
                          $line =~ s/[^0-9]//g;
-                         $response = $ua->get("http://$config{DB_Host}/middleware/data/$inverter->[1].json?operation=add&value=$line");
-                         if (!$response->is_success) {
-                                 push @err,$response->status_line;
-                         }
-                         last;
+			 if ($config{DB_direct} == 1) {
+			     print "direct";
+                             $response = $ua->get("http://$config{DB_Host}/middleware/data/$inverter->[1].json?operation=add&value=$line");
+                             if (!$response->is_success) {
+                                     push @err,$response->status_line;
+                             }
+                             last;
+		 	 } else {
+			     print "$inverter->[4] = $line\n";
+			 }
                      }
                }
        }
@@ -37,5 +43,8 @@ foreach my $inverter (@{$config{inverter}}){
 }
 foreach (@err) {
      print "$_\n";
+}
+if ($config{DB_direct} == 0) {
+   sleep(10);
 }
 exit @err ? 1 : 0;

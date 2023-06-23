@@ -1,0 +1,33 @@
+"meters": [
+...
+        {
+            // deye inverters
+
+            "enabled": true,               // disabled meters will be ignored (default)
+            "allowskip": false,            // errors when opening meter may be ignored if enabled
+            "read_timeout": 60,
+            "use_local_time": true,
+            "aggtime": 10,                 // aggregate meter readings and send middleware update after <aggtime> seconds
+
+            "protocol": "exec",            // meter protocol, see 'vzlogger -h' for full list
+            "command": "/usr/local/bin/deye2vzlogger",
+            "format": "$i = $v", // $t=timestamp $v=value $i=identifier
+
+            "channels": [{
+                "uuid": "<YOUR UUID>",
+                "middleware": "http://middleware.example.com/middleware.php",
+                "identifier": "<YOUR IDENTIFIER>",    // OBIS identifier
+                "duplicates": 300            // duplicate handling, default 0 (send duplicate values)
+                                            //   >0: send duplicate values only each <duplicates> seconds
+                                            // Activate only for abs. counter values (Zaehlerstaende) and not for impulses
+            },
+	    {
+                "uuid": "<YOUR UUID>",
+                "middleware": "http://middleware.example.com/middleware.php",
+                "identifier": "<YOUR IDENTIFIER>",    // OBIS identifier
+                "duplicates": 300            // duplicate handling, default 0 (send duplicate values)
+                                            //   >0: send duplicate values only each <duplicates> seconds
+                                            // Activate only for abs. counter values (Zaehlerstaende) and not for impulses
+            }]
+        },
+    ]
