@@ -25,7 +25,6 @@ foreach my $inverter (@{$config{inverter}}){
                      if ($line =~ /(?<=webdata_now_p = ")\d+/) {
                          $line =~ s/[^0-9]//g;
 			 if ($config{DB_direct} == 1) {
-			     print "direct";
                              $response = $ua->get("http://$config{DB_Host}/middleware/data/$inverter->[1].json?operation=add&value=$line");
                              if (!$response->is_success) {
                                      push @err,$response->status_line;
